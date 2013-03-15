@@ -33,6 +33,7 @@ THE SOFTWARE.
 
 import json
 import urllib2
+from httplib import HTTPException
 
 class ElophantException(Exception):
     def __init__(self, message):
@@ -50,10 +51,13 @@ class ElophantAPI:
     def call(self, params = []):
 
         params = '/'. join(map(str, params))
-
-        response = urllib2.urlopen(
-            '%s/%s/?key=%s' % (self.BASE_URI, params, self.API_KEY)                           
-        ).read()
+        
+        try:
+            response = urllib2.urlopen(
+                '%s/%s/?key=%s' % (self.BASE_URI, params, self.API_KEY)                           
+            ).read()
+        except HTTPException:
+            raise ElophantException('Unable to contact server.')
 
         data = json.loads(response.decode('UTF-8'))
 
